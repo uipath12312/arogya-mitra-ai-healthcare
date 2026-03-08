@@ -165,3 +165,45 @@ button[type="submit"]:hover {
     border-radius: 8px;
     border-left: 4px solid #28a745;
 }
+
+.severity-high {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+.severity-moderate {
+    color: #ffc107;
+    font-weight: bold;
+}
+
+.severity-low {
+    color: #28a745;
+    font-weight: bold;
+}
+
+.hospital-card.recommended {
+    border-left: 4px solid #ffd700;
+    background: #fffef0;
+}
+
+.recommendation-high {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+.recommendation-medium {
+    color: #333;
+}
+
+.recommendation-low {
+    color: #666;
+    font-style: italic;
+}
+
+.apply-info {
+    background: #e7f3ff;
+    padding: 8px;
+    border-radius: 4px;
+    margin-top: 8px;
+    font-size: 0.9em;
+}
