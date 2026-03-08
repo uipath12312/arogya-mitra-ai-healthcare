@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AROGYA-MITRA - AI Healthcare Assistant</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏥 AROGYA-MITRA</h1>
+            <p>AI-Powered Healthcare Analysis & Recommendation System</p>
+        </header>
+
+        <main>
+            <div class="upload-section">
+                <h2>Upload Medical Document</h2>
+                <form id="uploadForm" enctype="multipart/form-data">
+                    <div class="file-input-wrapper">
+                        <input type="file" id="document" name="document" accept=".pdf,.jpg,.jpeg,.png" required>
+                        <label for="document">Choose File</label>
+                        <span id="fileName">No file chosen</span>
+                    </div>
+                    
+                    <div class="patient-info">
+                        <input type="text" name="age" placeholder="Age" required>
+                        <input type="text" name="income" placeholder="Annual Income (₹)">
+                        <select name="state">
+                            <option value="">Select State</option>
+                            <option value="delhi">Delhi</option>
+                            <option value="maharashtra">Maharashtra</option>
+                            <option value="karnataka">Karnataka</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" id="analyzeBtn">Analyze Document</button>
+                </form>
+            </div>
+
+            <div id="loading" class="loading" style="display: none;">
+                <div class="spinner"></div>
+                <p>Analyzing your medical document...</p>
+            </div>
+
+            <div id="results" class="results" style="display: none;">
+                <div class="diagnosis-section">
+                    <h3>📋 Diagnosis</h3>
+                    <div id="diagnosisContent"></div>
+                </div>
+
+                <div class="schemes-section">
+                    <h3>🎯 Eligible Government Schemes</h3>
+                    <div id="schemesContent"></div>
+                </div>
+
+                <div class="hospitals-section">
+                    <h3>🏥 Hospital Comparison</h3>
+                    <div id="hospitalsContent"></div>
+                </div>
+
+                <div class="recommendations-section">
+                    <h3>💡 Recommendations</h3>
+                    <div id="recommendationsContent"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
