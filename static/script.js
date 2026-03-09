@@ -172,7 +172,7 @@ function displayHospitals(hospitals) {
             
             <div class="procedures-list">
                 <h4>Procedure Costs:</h4>
-                ${hospital.procedures.map(proc => `
+                ${hospital.procedures_list.map(proc => `
                     <div class="procedure-item">
                         <span>${proc.name}</span>
                         <span style="font-weight: 600;">₹${proc.cost.toLocaleString()}</span>
