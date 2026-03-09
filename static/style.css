@@ -25,9 +25,10 @@ header {
 header h1 {
     font-size: 3em;
     margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
 }
 
-header p {
+.tagline {
     font-size: 1.2em;
     opacity: 0.9;
 }
@@ -39,86 +40,82 @@ main {
     box-shadow: 0 20px 60px rgba(0,0,0,0.3);
 }
 
-.upload-section {
+.upload-section h2 {
+    color: #667eea;
+    margin-bottom: 10px;
+}
+
+.upload-section > p {
+    color: #666;
     margin-bottom: 30px;
 }
 
-.upload-section h2 {
-    color: #667eea;
-    margin-bottom: 20px;
+.form-group {
+    margin-bottom: 25px;
 }
 
-.file-input-wrapper {
-    margin-bottom: 20px;
+.form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #333;
 }
 
-input[type="file"] {
-    display: none;
-}
-
-label[for="document"] {
-    display: inline-block;
-    padding: 12px 30px;
-    background: #667eea;
-    color: white;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.3s;
-}
-
-label[for="document"]:hover {
-    background: #5568d3;
-}
-
-#fileName {
-    margin-left: 15px;
-    color: #666;
-}
-
-.patient-info {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 15px;
-    margin-bottom: 20px;
-}
-
-.patient-info input,
-.patient-info select {
+.form-group select,
+.form-group textarea,
+.form-group input[type="file"] {
+    width: 100%;
     padding: 12px;
     border: 2px solid #e0e0e0;
     border-radius: 8px;
-    font-size: 1em;
+    font-size: 16px;
+    transition: border-color 0.3s;
 }
 
-button[type="submit"] {
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.form-group small {
+    display: block;
+    margin-top: 5px;
+    color: #999;
+    font-size: 14px;
+}
+
+.btn-primary {
     width: 100%;
     padding: 15px;
-    background: #667eea;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     border: none;
     border-radius: 8px;
-    font-size: 1.1em;
+    font-size: 18px;
+    font-weight: 600;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: transform 0.2s;
 }
 
-button[type="submit"]:hover {
-    background: #5568d3;
+.btn-primary:hover {
+    transform: translateY(-2px);
 }
 
-.loading {
-    text-align: center;
-    padding: 40px;
+.btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
-.spinner {
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid #667eea;
+.loader {
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #667eea;
     border-radius: 50%;
-    width: 50px;
-    height: 50px;
+    width: 20px;
+    height: 20px;
     animation: spin 1s linear infinite;
-    margin: 0 auto 20px;
+    display: inline-block;
+    margin-left: 10px;
 }
 
 @keyframes spin {
@@ -126,84 +123,162 @@ button[type="submit"]:hover {
     100% { transform: rotate(360deg); }
 }
 
-.results > div {
-    margin-bottom: 30px;
-    padding: 20px;
-    background: #f8f9fa;
-    border-radius: 12px;
+.results-section {
+    margin-top: 40px;
+    padding-top: 40px;
+    border-top: 2px solid #e0e0e0;
 }
 
-.results h3 {
+.results-section h2 {
     color: #667eea;
+    margin-bottom: 30px;
+}
+
+.card {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 25px;
+    border-left: 4px solid #667eea;
+}
+
+.card h3 {
+    color: #333;
     margin-bottom: 15px;
+}
+
+.info-item {
+    margin-bottom: 12px;
+    padding: 10px;
+    background: white;
+    border-radius: 6px;
+}
+
+.info-item strong {
+    color: #667eea;
 }
 
 .hospital-card {
     background: white;
-    padding: 15px;
-    margin-bottom: 15px;
-    border-radius: 8px;
-    border-left: 4px solid #667eea;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 20px;
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.hospital-card h4 {
-    color: #333;
-    margin-bottom: 10px;
-}
-
-.hospital-info {
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
-.scheme-card {
-    background: white;
-    padding: 15px;
-    margin-bottom: 15px;
-    border-radius: 8px;
-    border-left: 4px solid #28a745;
-}
-
-.severity-high {
-    color: #dc3545;
-    font-weight: bold;
-}
-
-.severity-moderate {
-    color: #ffc107;
-    font-weight: bold;
-}
-
-.severity-low {
-    color: #28a745;
-    font-weight: bold;
+.hospital-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
 }
 
 .hospital-card.recommended {
-    border-left: 4px solid #ffd700;
-    background: #fffef0;
+    border-color: #4caf50;
+    background: #f1f8f4;
 }
 
-.recommendation-high {
-    color: #dc3545;
-    font-weight: bold;
+.hospital-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: 15px;
 }
 
-.recommendation-medium {
+.hospital-name {
+    font-size: 1.5em;
     color: #333;
+    font-weight: 600;
 }
 
-.recommendation-low {
+.cost-badge {
+    background: #667eea;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 1.2em;
+    font-weight: 600;
+}
+
+.hospital-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.info-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     color: #666;
-    font-style: italic;
 }
 
-.apply-info {
-    background: #e7f3ff;
+.procedures-list {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.procedures-list h4 {
+    color: #667eea;
+    margin-bottom: 10px;
+}
+
+.procedure-item {
+    display: flex;
+    justify-content: space-between;
     padding: 8px;
-    border-radius: 4px;
-    margin-top: 8px;
-    font-size: 0.9em;
+    background: #f8f9fa;
+    border-radius: 6px;
+    margin-bottom: 8px;
+}
+
+.scheme-badge {
+    display: inline-block;
+    background: #4caf50;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+.subtitle {
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.error-message {
+    background: #ffebee;
+    color: #c62828;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 20px;
+    border-left: 4px solid #c62828;
+}
+
+footer {
+    text-align: center;
+    color: white;
+    margin-top: 40px;
+    opacity: 0.9;
+}
+
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 2em;
+    }
+    
+    main {
+        padding: 20px;
+    }
+    
+    .hospital-header {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .hospital-info {
+        grid-template-columns: 1fr;
+    }
 }

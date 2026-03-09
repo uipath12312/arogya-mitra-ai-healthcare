@@ -3,68 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AROGYA-MITRA - AI Healthcare Assistant</title>
+    <title>AROGYA-MITRA - AI Healthcare Cost Comparison</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <div class="container">
         <header>
             <h1>🏥 AROGYA-MITRA</h1>
-            <p>AI-Powered Healthcare Analysis & Recommendation System</p>
+            <p class="tagline">AI-Powered Healthcare Cost Comparison & Recommendation System</p>
         </header>
 
         <main>
             <div class="upload-section">
-                <h2>Upload Medical Document</h2>
-                <form id="uploadForm" enctype="multipart/form-data">
-                    <div class="file-input-wrapper">
-                        <input type="file" id="document" name="document" accept=".pdf,.jpg,.jpeg,.png" required>
-                        <label for="document">Choose File</label>
-                        <span id="fileName">No file chosen</span>
-                    </div>
-                    
-                    <div class="patient-info">
-                        <input type="text" name="age" placeholder="Age" required>
-                        <input type="text" name="income" placeholder="Annual Income (₹)">
-                        <select name="state">
-                            <option value="">Select State</option>
-                            <option value="delhi">Delhi</option>
-                            <option value="maharashtra">Maharashtra</option>
-                            <option value="karnataka">Karnataka</option>
+                <h2>Find Affordable Healthcare</h2>
+                <p>Upload medical documents or describe your health concern to get personalized hospital recommendations</p>
+                
+                <form id="analysisForm">
+                    <div class="form-group">
+                        <label for="city">Select City *</label>
+                        <select id="city" name="city" required>
+                            <option value="">Choose your city...</option>
                         </select>
                     </div>
-                    
-                    <button type="submit" id="analyzeBtn">Analyze Document</button>
+
+                    <div class="form-group">
+                        <label for="problemText">Describe Your Medical Problem</label>
+                        <textarea id="problemText" name="problem_text" rows="4" 
+                                  placeholder="E.g., Experiencing chest pain and shortness of breath..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="document">Or Upload Medical Document (Optional)</label>
+                        <input type="file" id="document" name="document" 
+                               accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+                        <small>Supported: PDF, Images, Word documents (Max 16MB)</small>
+                    </div>
+
+                    <button type="submit" class="btn-primary">
+                        <span id="btnText">Analyze & Get Recommendations</span>
+                        <span id="btnLoader" class="loader" style="display:none;"></span>
+                    </button>
                 </form>
             </div>
 
-            <div id="loading" class="loading" style="display: none;">
-                <div class="spinner"></div>
-                <p>Analyzing your medical document...</p>
-            </div>
-
-            <div id="results" class="results" style="display: none;">
-                <div class="diagnosis-section">
-                    <h3>📋 Diagnosis</h3>
-                    <div id="diagnosisContent"></div>
+            <div id="results" class="results-section" style="display:none;">
+                <h2>Analysis Results</h2>
+                
+                <div id="medicalInfo" class="card">
+                    <h3>📋 Medical Analysis</h3>
+                    <div id="medicalInfoContent"></div>
                 </div>
 
-                <div class="schemes-section">
-                    <h3>🎯 Eligible Government Schemes</h3>
-                    <div id="schemesContent"></div>
+                <div id="schemeInfo" class="card">
+                    <h3>🎯 Government Scheme Eligibility</h3>
+                    <div id="schemeInfoContent"></div>
                 </div>
 
-                <div class="hospitals-section">
-                    <h3>🏥 Hospital Comparison</h3>
-                    <div id="hospitalsContent"></div>
-                </div>
-
-                <div class="recommendations-section">
-                    <h3>💡 Recommendations</h3>
-                    <div id="recommendationsContent"></div>
+                <div id="hospitalRecommendations">
+                    <h3>🏥 Hospital Recommendations</h3>
+                    <p class="subtitle">Sorted by cost (cheapest first)</p>
+                    <div id="hospitalList"></div>
                 </div>
             </div>
+
+            <div id="error" class="error-message" style="display:none;"></div>
         </main>
+
+        <footer>
+            <p>Team Karishma | Hackathon 2026 | Empowering Affordable Healthcare Access</p>
+        </footer>
     </div>
 
     <script src="{{ url_for('static', filename='script.js') }}"></script>

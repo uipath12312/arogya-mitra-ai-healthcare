@@ -1,15 +1,42 @@
-document.getElementById('document').addEventListener('change', function(e) {
-    const fileName = e.target.files[0]?.name || 'No file chosen';
-    document.getElementById('fileName').textContent = fileName;
+// Load cities on page load
+document.addEventListener('DOMContentLoaded', () => {
+    loadCities();
 });
 
-document.getElementById('uploadForm').addEventListener('submit', async function(e) {
+async function loadCities() {
+    try {
+        const response = await fetch('/api/cities');
+        const data = await response.json();
+        
+        const citySelect = document.getElementById('city');
+        data.cities.forEach(city => {
+            const option = document.createElement('option');
+            option.value = city;
+            option.textContent = city;
+            citySelect.appendChild(option);
+        });
+    } catch (error) {
+        console.error('Error loading cities:', error);
+    }
+}
+
+// Handle form submission
+document.getElementById('analysisForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     
-    const formData = new FormData(this);
+    const formData = new FormData(e.target);
+    const btnText = document.getElementById('btnText');
+    const btnLoader = document.getElementById('btnLoader');
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    const errorDiv = document.getElementById('error');
+    const resultsDiv = document.getElementById('results');
     
-    document.getElementById('loading').style.display = 'block';
-    document.getElementById('results').style.display = 'none';
+    // Show loading state
+    btnText.style.display = 'none';
+    btnLoader.style.display = 'inline-block';
+    submitBtn.disabled = true;
+    errorDiv.style.display = 'none';
+    resultsDiv.style.display = 'none';
     
     try {
         const response = await fetch('/api/analyze', {
@@ -19,67 +46,148 @@ document.getElementById('uploadForm').addEventListener('submit', async function(
         
         const data = await response.json();
         
-        if (response.ok) {
-            displayResults(data);
-        } else {
-            alert('Error: ' + data.error);
+        if (!response.ok) {
+            throw new Error(data.error || 'Analysis failed');
         }
+        
+        displayResults(data);
+        resultsDiv.style.display = 'block';
+        
+        // Scroll to results
+        resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        
     } catch (error) {
-        alert('Error analyzing document: ' + error.message);
+        errorDiv.textContent = error.message;
+        errorDiv.style.display = 'block';
     } finally {
-        document.getElementById('loading').style.display = 'none';
+        btnText.style.display = 'inline';
+        btnLoader.style.display = 'none';
+        submitBtn.disabled = false;
     }
 });
 
 function displayResults(data) {
-    // Display diagnosis
-    document.getElementById('diagnosisContent').innerHTML = `
-        <p><strong>Diagnosis:</strong> ${data.diagnosis.diagnosis}</p>
-        <p><strong>Treatment:</strong> ${data.diagnosis.treatment}</p>
-        <p><strong>Severity:</strong> <span class="severity-${data.diagnosis.severity.toLowerCase()}">${data.diagnosis.severity}</span></p>
-        <p><strong>Duration:</strong> ${data.diagnosis.duration}</p>
-        ${data.diagnosis.estimated_base_cost ? `<p><strong>Estimated Base Cost:</strong> ₹${data.diagnosis.estimated_base_cost.toLocaleString()}</p>` : ''}
+    displayMedicalInfo(data.medical_info);
+    displaySchemeInfo(data.scheme_eligibility);
+    displayHospitals(data.recommendations);
+}
+
+function displayMedicalInfo(info) {
+    const content = document.getElementById('medicalInfoContent');
+    content.innerHTML = `
+        <div class="info-item">
+            <strong>Diagnosis:</strong> ${info.diagnosis}
+        </div>
+        <div class="info-item">
+            <strong>Recommended Procedures:</strong> ${info.procedures.join(', ')}
+        </div>
+        <div class="info-item">
+            <strong>Severity:</strong> <span style="color: ${getSeverityColor(info.severity)}">${info.severity}</span>
+        </div>
+        <div class="info-item">
+            <strong>Urgency:</strong> ${info.urgency}
+        </div>
+        <div class="info-item">
+            <strong>Summary:</strong> ${info.summary}
+        </div>
+    `;
+}
+
+function displaySchemeInfo(scheme) {
+    const content = document.getElementById('schemeInfoContent');
+    
+    let html = '';
+    
+    if (scheme.ayushman_bharat.eligible) {
+        html += `
+            <div class="info-item">
+                <strong>✅ Ayushman Bharat (PM-JAY):</strong> Eligible<br>
+                <small>${scheme.ayushman_bharat.coverage}</small>
+            </div>
+        `;
+    } else {
+        html += `
+            <div class="info-item">
+                <strong>❌ Ayushman Bharat (PM-JAY):</strong> Not Eligible
+            </div>
+        `;
+    }
+    
+    if (scheme.state_schemes && scheme.state_schemes.length > 0) {
+        scheme.state_schemes.forEach(s => {
+            html += `
+                <div class="info-item">
+                    <strong>${s.eligible ? '✅' : '❌'} ${s.name}:</strong> 
+                    ${s.eligible ? 'Eligible' : 'Not Eligible'}
+                </div>
+            `;
+        });
+    }
+    
+    html += `
+        <div class="info-item">
+            <strong>Recommendations:</strong> ${scheme.recommendations}
+        </div>
     `;
     
-    // Display schemes
-    const schemesHTML = data.eligible_schemes.map(scheme => `
-        <div class="scheme-card">
-            <h4>${scheme.name}</h4>
-            <p><strong>Coverage:</strong> ₹${scheme.coverage.toLocaleString()}</p>
-            <p><strong>Benefits:</strong> ${scheme.benefits}</p>
-            ${scheme.eligibility ? `<p><strong>Eligibility:</strong> ${scheme.eligibility}</p>` : ''}
-            ${scheme.how_to_apply ? `<p class="apply-info"><strong>How to Apply:</strong> ${scheme.how_to_apply}</p>` : ''}
-        </div>
-    `).join('');
-    document.getElementById('schemesContent').innerHTML = schemesHTML || '<p>No schemes found based on your profile. Consider checking eligibility criteria.</p>';
+    content.innerHTML = html;
+}
+
+function displayHospitals(hospitals) {
+    const list = document.getElementById('hospitalList');
     
-    // Display hospitals
-    const hospitalsHTML = data.hospitals.map((hospital, index) => `
+    list.innerHTML = hospitals.map((hospital, index) => `
         <div class="hospital-card ${index === 0 ? 'recommended' : ''}">
-            <h4>${hospital.name} ${index === 0 ? '⭐ Recommended' : ''}</h4>
-            <div class="hospital-info">
-                <span><strong>Cost:</strong> ₹${hospital.estimated_cost.toLocaleString()}</span>
-                <span><strong>Success Rate:</strong> ${hospital.success_rate}%</span>
-                <span><strong>Rating:</strong> ${hospital.patient_reviews}/5 ⭐</span>
-                <span><strong>Type:</strong> ${hospital.type}</span>
+            ${index === 0 ? '<div style="color: #4caf50; font-weight: 600; margin-bottom: 10px;">⭐ BEST VALUE</div>' : ''}
+            
+            <div class="hospital-header">
+                <div class="hospital-name">${hospital.name}</div>
+                <div class="cost-badge">₹${hospital.total_cost.toLocaleString()}</div>
             </div>
-            ${hospital.waiting_time ? `<p><strong>Waiting Time:</strong> ${hospital.waiting_time}</p>` : ''}
-            ${hospital.facilities ? `<p><strong>Facilities:</strong> ${hospital.facilities}</p>` : ''}
+            
+            <div class="hospital-info">
+                <div class="info-badge">
+                    ⭐ Rating: ${hospital.rating}/5
+                </div>
+                <div class="info-badge">
+                    ✅ Success Rate: ${hospital.success_rate}%
+                </div>
+                <div class="info-badge">
+                    📍 ${hospital.city}
+                </div>
+                <div class="info-badge">
+                    📞 ${hospital.phone}
+                </div>
+            </div>
+            
+            <div style="margin-top: 10px; color: #666;">
+                <strong>Address:</strong> ${hospital.address}
+            </div>
+            
+            <div style="margin-top: 10px;">
+                <strong>Specialties:</strong> ${hospital.specialties.join(', ')}
+            </div>
+            
+            ${hospital.government_schemes ? '<span class="scheme-badge">Accepts Government Schemes</span>' : ''}
+            
+            <div class="procedures-list">
+                <h4>Procedure Costs:</h4>
+                ${hospital.procedures.map(proc => `
+                    <div class="procedure-item">
+                        <span>${proc.name}</span>
+                        <span style="font-weight: 600;">₹${proc.cost.toLocaleString()}</span>
+                    </div>
+                `).join('')}
+            </div>
         </div>
     `).join('');
-    document.getElementById('hospitalsContent').innerHTML = hospitalsHTML;
-    
-    // Display recommendations with priority styling
-    const recsHTML = data.recommendations.map(rec => {
-        const icon = rec.type === 'scheme' ? '🎯' : 
-                     rec.type === 'hospital' ? '🏥' : 
-                     rec.type === 'savings' ? '💰' :
-                     rec.type === 'alert' ? '⚠️' : '💡';
-        const priorityClass = rec.priority || 'medium';
-        return `<p class="recommendation-${priorityClass}">${icon} ${rec.message}</p>`;
-    }).join('');
-    document.getElementById('recommendationsContent').innerHTML = recsHTML;
-    
-    document.getElementById('results').style.display = 'block';
-    document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+}
+
+function getSeverityColor(severity) {
+    const colors = {
+        'mild': '#4caf50',
+        'moderate': '#ff9800',
+        'severe': '#f44336'
+    };
+    return colors[severity.toLowerCase()] || '#666';
 }
